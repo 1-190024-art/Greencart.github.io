@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GreenCart — Organic & Sustainable Store</title>
+<meta name="description" content="GreenCart — Organic & sustainable products. Clean design, search, filters, cart, checkout, and accessible UI. Demo site (no real payments)." />
+  <meta name="keywords" content="organic, sustainable, eco-friendly, buy organic, reusable, zero waste" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8C%B1%3C/text%3E%3C/svg%3E">
+  <!-- Open Graph -->
+  <meta property="og:title" content="GreenCart — Organic & Sustainable Store" />
+  <meta property="og:description" content="Shop eco-friendly products with confidence. Demo store." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1505575967450-3c9f4b08d0a9?q=80&w=1200&auto=format&fit=crop" />
+
+  <!-- Basic styling (Tailwind-like feel) -->
+  <style>
+    :root{--bg:#f7fafc;--card:#ffffff;--muted:#6b7280;--accent:#10b981;--accent-dark:#059669;--radius:14px;--shadow:0 8px 24px rgba(16,24,40,.08);}body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);margin:0;color:#0f172a}
+    .container{width:min(1200px,94%);margin:0 auto}
+    header{background:linear-gradient(90deg,#ecfccb,#bbf7d0);border-bottom:1px solid rgba(15,23,42,.04)}
+    .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-dark));display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    nav a{margin-left:12px;color:var(--muted);text-decoration:none}
+    .searchbar{display:flex;align-items:center;gap:8px}
+    .input{padding:10px 12px;border-radius:10px;border:1px solid rgba(15,23,42,.06);background:white}
+    .btn{background:var(--accent);color:white;padding:10px 12px;border:none;border-radius:10px;cursor:pointer}
+
+    /* grid */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:20px;padding:36px 0;align-items:center}
+    .hero__panel{background:var(--card);padding:18px;border-radius:14px;box-shadow:var(--shadow)}
+    h1{margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0}
+
+    .controls{display:flex;gap:12px;align-items:center;margin:18px 0}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:8px 12px;border-radius:999px;border:1px solid rgba(15,23,42,.06);background:white;cursor:pointer}
+    .chip.active{background:linear-gradient(90deg,#bbf7d0,#d1fae5);border-color:var(--accent-dark)}
+
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{background:var(--card);border-radius:12px;padding:12px;border:1px solid rgba(15,23,42,.04)}
+    .card img{width:100%;height:200px;object-fit:cover;border-radius:8px}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+
+    /* product modal & cart */
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,.5);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .modal-panel{width:min(900px,96%);background:white;border-radius:12px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+    .drawer{position:fixed;right:0;top:0;height:100%;width:380px;background:white;border-left:1px solid rgba(15,23,42,.04);box-shadow:-20px 0 50px rgba(2,6,23,.08);transform:translateX(100%);transition:.25s}
+    .drawer.open{transform:translateX(0)}
+
+    /* footer */
+    footer{padding:24px 0;color:var(--muted);border-top:1px solid rgba(15,23,42,.04);margin-top:30px}
+
+    @media(max-width:980px){.grid{grid-template-columns:repeat(2,1fr)}.hero{grid-template-columns:1fr}}@media(max-width:560px){.grid{grid-template-columns:1fr}}
+
+    /* accessibility focus */
+    :focus{outline:3px solid rgba(16,185,129,.18);outline-offset:3px}
+  </style>
+
+  <!-- Structured Data (example for SEO & rich results) -->
+  <script type="application/ld+json">{
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "GreenCart",
+    "url": "https://example.com",
+    "logo": "https://example.com/logo.png",
+    "sameAs": ["https://facebook.com/greencart","https://instagram.com/greencart"]
+  }</script>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">GC</div>
+        <div>
+          <div style="font-weight:800">GreenCart</div>
+          <div style="font-size:13px;color:var(--muted)">Organic • Sustainable • Local</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="searchbar" role="search" aria-label="Search products">
+          <input id="globalSearch" class="input" placeholder="Search products, e.g. matcha, soap" aria-label="Search products" />
+          <button class="btn" id="searchBtn">Search</button>
+        </div>
+
+        <nav aria-label="Main navigation">
+          <a href="#products">Products</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+         
+       </nav>
+
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="openAuth" class="chip" aria-haspopup="dialog">Sign in</button>
+          <button id="openCartBtn" class="chip" aria-controls="cartDrawer">Cart (<span id="badge">0</span>)</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO / Brand intro -->
+    <section class="hero">
+      <div class="hero__panel">
+        <h1>Simple, sustainable products — Designed for everyday life</h1>
+        <p class="lead">Clean design, fast checkout, and products sourced responsibly. Use this template as your project submission and replace sample data with your own.</p>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <a class="btn" href="#products">Shop products</a>
+          <a class="chip" href="#about">Our mission</a>
+        </div>
+
+        <div style="margin-top:18px">
+          <h4 style="margin:8px 0 6px">Trust signals</h4>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="chip">Free returns (7 days)</div>
+            <div class="chip">SSL-secure checkout</div>
+            <div class="chip">4.8 ★ average rating</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero__panel" aria-hidden="false">
+        <img src="https://images.unsplash.com/photo-1505575967450-3c9f4b08d0a9?q=80&w=800&auto=format&fit=crop" alt="Assortment of eco products on a table" style="width:100%;height:240px;object-fit:cover;border-radius:10px;" loading="lazy">
+        <p style="margin:12px 0 0;color:var(--muted)">Example promotion: Back to school — Up to 25% off selected eco essentials.</p>
+      </aside>
+    </section>
+
+    <!-- CONTROLS: Filters, categories, price range -->
+    <section style="margin-top:18px">
+      <div class="controls">
+        <div class="chips" id="categoryChips" role="tablist"></div>
+        <label style="margin-left:auto;color:var(--muted)">Price: <input id="priceRange" type="range" min="0" max="1500" value="1500" aria-label="Maximum price"/></label>
+        <select id="sortBy" class="input" aria-label="Sort products">
+          <option value="popular">Popular</option>
+          <option value="priceAsc">Price: low → high</option>
+          <option value="priceDesc">Price: high → low</option>
+          <option value="nameAsc">Name: A → Z</option>
+        </select>
+      </div>
+
+      <!-- PRODUCT GRID -->
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+    </section>
+
+    <!-- CHECKOUT SUMMARY SECTION (link target) -->
+    <section id="checkout" style="margin-top:34px">
+      <h2>Checkout</h2>
+      <p style="color:var(--muted);margin-top:6px">Demo checkout with payment placeholders. For production, integrate with Stripe/PayPal and a backend to handle payments & order emails.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:12px">
+        <form id="checkoutForm" class="card" aria-label="Checkout form">
+          <h3>Shipping details</h3>
+          <label>Full name<input class="input" name="fullname" required/></label>
+          <label>Email<input class="input" name="email" type="email" required/></label>
+          <label>Address<input class="input" name="address" required/></label>
+          <label>City<input class="input" name="city" required/></label>
+          <label>Postal code<input class="input" name="zip" required/></label>
+          <label>Payment method
+            <select class="input" name="payment" required>
+              <option value="card">Credit/Debit (Stripe)</option>
+              <option value="paypal">PayPal</option>
+              <option value="gcash">GCash (PH)</option>
+              <option value="cod">Cash on Delivery</option>
+            </select>
+          </label>
+          <p style="color:var(--muted);font-size:13px">Note: This demo does not process real payments. Replace this select with a Stripe/PayPal SDK integration server-side.</p>
+          <button class="btn" type="submit">Place order</button>
+        </form>
+
+        <aside class="card">
+          <h3>Order Summary</h3>
+          <div id="summary"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px"><strong>Total</strong><strong id="summaryTotal">₱0.00</strong></div>
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">After placing an order, the demo will show a confirmation. In production, send order confirmation emails from your backend (e.g., SendGrid, Mailgun).</div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about" style="margin-top:34px">
+      <h2>About us</h2>
+      <div class="card" style="margin-top:10px">
+        <p>GreenCart was founded to make sustainable living simple. We partner with local farms and craftsmen to bring high-quality organic products to your door.</p>
+        <p style="color:var(--muted)"><strong>Brand identity:</strong> Name: <em>GreenCart</em> — Logo: Placeholder above — Palette: green accent, soft neutrals. Maintain consistent fonts, button styles, and image treatments across pages.</p>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" style="margin-top:34px">
+      <h2>Contact</h2>
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;margin-top:10px">
+        <form id="contactForm" class="card">
+          <label>Email<input class="input" name="email" type="email" required/></label>
+          <label>Message<textarea class="input" name="message" rows="4" required></textarea></label>
+          <button class="btn" type="submit">Send message</button>
+        </form>
+
+        <aside class="card">
+          <p style="color:var(--muted)">Email: Greencart@gmail.com<br>Phone: +6393256490297<br>Address: Complex,Santa Rosa, Laguna
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <a class="chip" href="#">Facebook</a>
+            <a class="chip" href="#">Instagram</a>
+            <a class="chip" href="#">TikTok</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- PRIVACY & TERMS -->
+    <section id="privacy" style="margin-top:34px">
+      <h2>Privacy & Terms</h2>
+      <div class="card" style="margin-top:10px">
+        <h4>Privacy (sample)</h4>
+        <p>We collect name, email, and address to process orders. We do not sell your data. For production, add a full privacy policy and cookie consent tool. Use HTTPS (SSL) and ensure PCI compliance for card payments.</p>
+        <h4>Terms (sample)</h4>
+        <p>All sample content. Replace with your store's shipping, returns, and refund policies. Consult legal counsel before publishing.</p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer style="margin-top:30px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>© <span id="year"></span> GreenCart</div>
+        <div style="color:var(--muted)">Built for demo • Ensure accessibility & performance before submission</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- PRODUCT DETAIL MODAL -->
+  <div id="productModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-panel" role="document">
+      <div style="padding:16px">
+        <img id="modalImg" alt="" style="width:100%;height:100%;object-fit:cover"/>
+      </div>
+      <div style="padding:16px">
+        <h3 id="modalTitle"></h3>
+        <p id="modalCategory" style="color:var(--muted);"></p>
+        <p id="modalDesc"></p>
+        <p style="font-weight:800" id="modalPrice"></p>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" id="modalAdd">Add to cart</button>
+          <button class="chip" id="modalClose">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div id="cartDrawer" class="drawer" aria-hidden="true">
+    <div style="padding:16px;display:flex;justify-content:space-between;align-items:center">
+      <h3>Cart</h3>
+      <button class="chip" id="closeCart">Close</button>
+    </div>
+    <div style="padding:12px;display:flex;flex-direction:column;gap:10px" id="cartItems"></div>
+    <div style="padding:12px;border-top:1px solid rgba(15,23,42,.04);">
+      <div style="display:flex;justify-content:space-between"><strong>Subtotal</strong><span id="cartTotal">₱0.00</span></div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="chip" id="continueShopping">Continue shopping</button>
+        <a class="btn" href="#checkout">Checkout</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL (signup/login demo) -->
+  <div id="authModal" class="modal" aria-hidden="true">
+    <div class="modal-panel" role="document" style="grid-template-columns:1fr">
+      <div style="padding:18px">
+        <h3 id="authTitle">Sign in / Create account</h3>
+        <form id="authForm">
+          <label>Email<input class="input" name="email" type="email" required></label>
+          <label>Password<input class="input" name="password" type="password" required></label>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" type="submit">Sign in</button>
+            <button class="chip" id="createAccount" type="button">Create account</button>
+          </div>
+          <p style="color:var(--muted);font-size:13px;margin-top:8px">Demo accounts are stored locally in your browser (localStorage). For real accounts, implement secure server-side auth (bcrypt, sessions/JWT).</p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== DEMO PRODUCTS (small dataset) =====
+    const PRODUCTS = [
+      {id:1,name:'Organic Coffee',category:'Beverages',price:599,img:'https://caffecorsini.com/cdn/shop/articles/Immagine_il_caffe_biologico.jpg?v=1695973290&width=1200.'},
+      {id:2,name:'Bamboo Toothbrush (4-pack)',category:'Home & Living',price:249,img:'https://organicb.in/wp-content/uploads/2020/07/Organic-B-12.jpg.'},
+      {id:3,name:'Organic Almonds 300g',category:'Food',price:250,img:'https://awgbakery.com/cdn/shop/articles/almonds600_720x.jpg?v=1685531892.'},
+      {id:4,name:'Organic Green Tea 1.5g',category:'Beverages',price:50,img:'https://www.traditionalmedicinals.com/cdn/shop/files/TM_PDP_GreenTeaPeppermint_square_01_448x448.jpg?v=1728575379.'}
+     
+    ];
+
+    // ===== Helpers =====
+    const el = s => document.querySelector(s);
+    const create = (t,attrs={})=>Object.assign(document.createElement(t),attrs);
+    const peso = v=>`₱${v.toFixed(2)}`;
+
+    // ===== State =====
+    let state = {search:'',category:'All',maxPrice:1500,sort:'popular',cart:JSON.parse(localStorage.getItem('gc_cart')||'[]'),user:JSON.parse(localStorage.getItem('gc_user')||'null')};
+
+    // ===== Init UI =====
+    el('#year').textContent = new Date().getFullYear();
+
+    // Build category chips
+    const cats = ['All',...new Set(PRODUCTS.map(p=>p.category))];
+    const chipsWrap = el('#categoryChips');
+    cats.forEach(c=>{const btn=create('button',{className:'chip'+(c==='All'?' active':''),textContent:c,role:'tab'});btn.addEventListener('click',()=>{document.querySelectorAll('#categoryChips .chip').forEach(x=>x.classList.remove('active'));btn.classList.add('active');state.category=c;renderProducts();});chipsWrap.appendChild(btn);});
+
+    // Search & controls
+    el('#globalSearch').addEventListener('input',e=>{state.search=e.target.value.toLowerCase();});
+    el('#searchBtn').addEventListener('click',()=>renderProducts());
+    el('#priceRange').addEventListener('input',e=>{state.maxPrice=Number(e.target.value);renderProducts();});
+    el('#sortBy').addEventListener('change',e=>{state.sort=e.target.value;renderProducts();});
+
+    // Auth modal
+    function openModal(sel){el(sel).classList.add('open');el(sel).setAttribute('aria-hidden','false');}
+    function closeModal(sel){el(sel).classList.remove('open');el(sel).setAttribute('aria-hidden','true');}
+    el('#openAuth').addEventListener('click',()=>openModal('#authModal'));
+    document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal('#'+m.id);}));
+
+    // Auth form (demo localStorage)
+    el('#authForm').addEventListener('submit',e=>{
+      e.preventDefault();const fd=new FormData(e.target);const email=fd.get('email');const pw=fd.get('password');
+      // In production: never store raw passwords. Use server-side hashing.
+      localStorage.setItem('gc_user',JSON.stringify({email}));state.user={email};alert('Signed in as '+email);closeModal('#authModal');updateAuthUI();
+    });
+    el('#createAccount').addEventListener('click',()=>{alert('Demo account created locally. For production, implement secure server-side registration with email verification.');});
+    function updateAuthUI(){if(state.user)el('#openAuth').textContent=`Hi, ${state.user.email.split('@')[0]}`;else el('#openAuth').textContent='Sign in';}
+
+    // ===== Render products =====
+    function renderProducts(){
+      const grid = el('#productGrid');grid.innerHTML='';
+      let items = PRODUCTS.filter(p=>p.name.toLowerCase().includes(state.search) && p.price<=state.maxPrice);
+      if(state.category!=='All') items = items.filter(p=>p.category===state.category);
+      if(state.sort==='priceAsc') items.sort((a,b)=>a.price-b.price);
+      else if(state.sort==='priceDesc') items.sort((a,b)=>b.price-a.price);
+      else if(state.sort==='nameAsc') items.sort((a,b)=>a.name.localeCompare(b.name));
+      else items.sort((a,b)=>b.id-a.id);
+      items.forEach(p=>grid.appendChild(productCard(p)));
+    }
+
+    function productCard(p){
+      const card = create('article',{className:'card',role:'article'});
+      const img = create('img',{src:p.img,alt:p.name,loading:'lazy'});
+      const title = create('div',{textContent:p.name,style:'font-weight:700;margin-top:8px'});
+      const cat = create('div',{textContent:p.category,style:'color:var(--muted);font-size:13px'});
+      const price = create('div',{textContent:peso(p.price),style:'margin-top:8px;font-weight:800'});
+      const row = create('div',{className:'meta'});
+      const view = create('button',{className:'chip',textContent:'View'});view.addEventListener('click',()=>openProduct(p));
+      const add = create('button',{className:'btn',textContent:'Add'});add.addEventListener('click',()=>{addToCart(p.id)});
+      row.append(view,add);
+      card.append(img,title,cat,price,row);
+      return card;
+    }
+
+    // Modal product
+    function openProduct(p){openModal('#productModal');el('#modalImg').src=p.img;el('#modalImg').alt=p.name;el('#modalTitle').textContent=p.name;el('#modalCategory').textContent=p.category;el('#modalDesc').textContent=p.desc;el('#modalPrice').textContent=peso(p.price);el('#modalAdd').onclick=()=>{addToCart(p.id);closeModal('#productModal');};}
+    el('#modalClose').addEventListener('click',()=>closeModal('#productModal'));
+
+    // ===== Cart =====
+    function persistCart(){localStorage.setItem('gc_cart',JSON.stringify(state.cart));renderCartIcon();renderCart();renderSummary();}
+    function renderCartIcon(){el('#badge').textContent = state.cart.reduce((a,b)=>a+b.qty,0);}    
+    function addToCart(id){const existing=state.cart.find(x=>x.id===id);if(existing)existing.qty++;else state.cart.push({id,qty:1});persistCart();alert('Added to cart');}
+    function updateQty(id,delta){const it=state.cart.find(x=>x.id===id);if(!it)return;it.qty+=delta;if(it.qty<=0)state.cart=state.cart.filter(x=>x.id!==id);persistCart();}
+    function removeFromCart(id){state.cart=state.cart.filter(x=>x.id!==id);persistCart();}
+
+    function renderCart(){const wrap=el('#cartItems');wrap.innerHTML='';let total=0;state.cart.forEach(ci=>{const p=PRODUCTS.find(x=>x.id===ci.id);total+=p.price*ci.qty;const row=create('div',{style:'display:flex;gap:8px;align-items:center'});row.append(create('img',{src:p.img,alt:p.name,width:64,height:64,style:'border-radius:8px;object-fit:cover'}));const meta=create('div');meta.innerHTML=`<div style="font-weight:700">${p.name}</div><div class="muted">${peso(p.price)} · ${p.category}</div>`;const actions=create('div',{style:'margin-left:auto;display:flex;flex-direction:column;gap:6px;align-items:flex-end'});const qty=create('div',{style:'display:flex;gap:6px;align-items:center'});const minus=create('button',{textContent:'–'});const plus=create('button',{textContent:'+'});const qcount=create('span',{textContent:ci.qty});minus.onclick=()=>{updateQty(ci.id,-1);};plus.onclick=()=>{updateQty(ci.id,1);};qty.append(minus,qcount,plus);const rem=create('button',{className:'chip',textContent:'Remove'});rem.onclick=()=>removeFromCart(ci.id);actions.append(qty,rem);row.append(meta,actions);wrap.appendChild(row);});el('#cartTotal').textContent=peso(total);}    
+
+    el('#openCartBtn').addEventListener('click',()=>{el('#cartDrawer').classList.add('open');el('#cartDrawer').setAttribute('aria-hidden','false');renderCart();});
+    el('#closeCart').addEventListener('click',()=>{el('#cartDrawer').classList.remove('open');el('#cartDrawer').setAttribute('aria-hidden','true');});
+    el('#continueShopping').addEventListener('click',()=>{el('#cartDrawer').classList.remove('open');});
+
+    // Summary (mini)
+    function renderSummary(){const sum=el('#summary');sum.innerHTML='';let total=0;state.cart.forEach(ci=>{const p=PRODUCTS.find(x=>x.id===ci.id);const line=create('div',{style:'display:flex;justify-content:space-between'});line.append(create('div',{textContent:`${p.name} × ${ci.qty}`}));line.append(create('div',{textContent:peso(p.price*ci.qty)}));sum.appendChild(line);total+=p.price*ci.qty;});el('#summaryTotal').textContent=peso(total);}    
+
+    // Checkout form (demo): show alert and clear cart
+    el('#checkoutForm').addEventListener('submit',e=>{e.preventDefault();if(state.cart.length===0){alert('Your cart is empty');return;}const fd=new FormData(e.target);const name=fd.get('fullname');alert(`Thank you ${name}! Demo order placed. In production, send order data to your backend to process payment and send confirmation email.`);state.cart=[];persistCart();e.target.reset();window.location.hash='#home';});
+
+    // Contact form (demo)
+    el('#contactForm').addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);alert('Thanks! Message received (demo).');e.target.reset();});
+
+    // Auth UI
+    updateAuthUI();
+
+    // Initial render
+    renderProducts();persistCart();
+
+    // Accessibility checks (contrast & alt text reminder)
+    // Ensure all images have meaningful alt text in production; use descriptive text for product images.
+
+    // Performance tips (console)
+    console.log('Performance tips: optimize images (WebP/AVIF), enable gzip/brotli, add caching headers, minify and bundle assets for production.');
+
+    // NOTE: To implement real payments and order-confirmation emails:
+    // - Integrate Stripe (Elements + server) or PayPal SDK (server-side capture).
+    // - On successful payment, server should create an order record and send an email (SendGrid/Mailgun) to the buyer.
+    // - For user accounts, implement server-side registration with hashed passwords and sessions or JWT.
+
+  </script>
+</body>
+</html>
